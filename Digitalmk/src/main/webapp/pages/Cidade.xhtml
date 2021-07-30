@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>CIDADES</title>
+</h:head>
+
+<h:body>
+<p:growl id="mensagem" />
+	<h:form id="frmlistagem">
+		<p:panel header="Cidades">
+			<p:dataTable id="dttabela" emptyMessage="Nem um regisro foi encontrado."
+				paginator="true" value="#{cidadeBean.cidades}" var="cidade" rows="15">
+
+				<f:facet name="footer">
+					<p:commandButton value="Novo" 
+					actionListener="#{cidadeBean.novo}"
+			        update=":mensagem :frmCidade:painelCidade" oncomplete=" PF('dialogCidade').show();"/>
+					
+					<!-- para colocar para cima troca o footer pelo header -->
+				</f:facet>
+
+				<p:column headerText="Cidade" sortBy="#{cidade.nome}" filterBy="#{cidade.nome}">
+				<h:outputText value="#{cidade.nome}"/>
+				</p:column>
+				<p:column headerText="Estado" sortBy="#{cidade.estado.nome}" filterBy="#{cidade.estado.nome}">
+				 <h:outputText value="#{cidade.estado.nome}" />
+				</p:column>
+				
+				<p:column headerText="Sigla" sortBy="#{cidade.estado.sigla}" filterBy="#{cidade.estado.sigla}">
+				 <h:outputText value="#{cidade.estado.sigla}" />
+				</p:column>
+				
+				
+				
+				<p:column headerText="Açoes">
+				
+				<!-- excluir -->
+				
+				<p:commandButton icon="ui-icon-trash"  actionListener="#{cidadeBean.excluir}"
+			    update="mensagem :frmlistagem:dttabela">
+				<p:confirm header="ATENÇÃO!!"
+				 message="Deseja realmente Excluir?"
+				 icon="ui-icon-alert"/>
+				 <f:attribute name="linhaSelecionada" value="#{cidade}" />  <!-- pegar linha do cursor var -->
+				 </p:commandButton>
+				
+				<!-- editar -->
+				 <p:commandButton  icon="ui-icon-pencil" actionListener="#{cidadeBean.editar}"
+				  update=":mensagem :frmCidade:painelCidade" oncomplete="PF('dialogCidade').show();">
+				  <f:attribute name="linhaSelecionada" value="#{cidade}" var="cidade" /> <!-- pegar linha do cursor var -->
+				 </p:commandButton>
+				</p:column>
+				
+				
+				
+				
+			</p:dataTable>
+			
+			<p:confirmDialog global="true">
+			<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+			
+		</p:panel>
+	</h:form>
+
+	<!-- -PAINEL ESTADOS  -->
+
+	<p:dialog header=" Novo Cadastro" widgetVar="dialogCidade"
+		draggable="true" resizable="true" modal="true">
+		
+		<h:form id="frmCidade">
+			<h:panelGrid id="painelCidade" columns="2">
+				<p:outputLabel value="Cidade:" />
+				<p:inputText size="30" maxlength="50" value="#{cidadeBean.cidade.nome}" />
+				
+				<p:outputLabel value="Estado"/>
+				<p:selectOneMenu filter="true" value="#{cidadeBean.cidade.estado}"
+				converter="omnifaces.SelectItemsConverter">
+				
+				<f:selectItem noSelectionOption="true" itemLabel="Selecione uma Estado" />
+				<f:selectItems value="#{cidadeBean.estados}" var="estado"
+				itemValue="#{estado}" itemLabel="#{estado.nome}" /><!-- pegando do list do do bean  instanciar o objeto -->
+				
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar" actionListener="#{cidadeBean.salvar}" 
+				update=":mensagem :frmCidade:painelCidade"/>
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('dialogCidade').hide();" />
+			</h:panelGrid>
+
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>
